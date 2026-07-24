@@ -19,6 +19,8 @@
 
 The runner connects to the target server through SSH, fetches the exact branch, runs Docker Compose, applies the production Compose configuration, and verifies container state. Configure environment protection so production requires a manual reviewer.
 
+Automatic deployment remains disabled until the repository variable `CD_ENABLED` is set to `true`. This prevents failed or accidental deployments before both environments and their secrets are ready. Manual dispatch uses the same safety switch.
+
 ## Required GitHub environment secrets
 
 Add these secrets separately to the `staging` and `production` environments:
