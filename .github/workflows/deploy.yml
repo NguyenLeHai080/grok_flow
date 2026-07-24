@@ -45,6 +45,8 @@ jobs:
       - name: Deploy exact branch revision locally
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_PROJECT_NAME: ${{ secrets.DEPLOY_PROJECT_NAME }}
+          DEPLOY_OVERRIDE_FILE: ${{ secrets.DEPLOY_OVERRIDE_FILE }}
           DEPLOY_BRANCH: ${{ steps.target.outputs.branch }}
         run: |
           set -euo pipefail
@@ -52,9 +54,12 @@ jobs:
           if [ "$DEPLOY_BRANCH" = "prod" ]; then
             compose_files+=(-f docker-compose.production.yml)
           fi
+          if [ -n "${DEPLOY_OVERRIDE_FILE:-}" ]; then
+            compose_files+=(-f "$DEPLOY_OVERRIDE_FILE")
+          fi
           cd "$DEPLOY_PATH"
           git fetch --prune origin
           git checkout "$DEPLOY_BRANCH"
           git reset --hard "origin/$DEPLOY_BRANCH"
-          docker compose "${compose_files[@]}" up -d --build --remove-orphans
-          docker compose "${compose_files[@]}" ps
+          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" up -d --build --remove-orphans
+          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" ps
