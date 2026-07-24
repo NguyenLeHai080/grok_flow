@@ -1,8 +1,12 @@
+import asyncio
+from types import SimpleNamespace
+
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from app.core.config import settings
 from app.main import app
+from app.modules.jobs import chat_service
 from app.modules.proxies.service import validate_proxy_url
 
 
@@ -43,3 +47,16 @@ def test_private_proxy_destinations_can_be_blocked():
 def test_proxy_url_rejects_embedded_credentials():
     with pytest.raises(HTTPException):
         validate_proxy_url("https://user:password@example.com")
+
+def test_chat_job_validates_managed_proxy_provider(monkeypatch):
+    def validate(base_url, provider):
+        assert base_url == "http://grok2api:8000"
+        assert provider == "grok2api"
+        raise RuntimeError("validation observed")
+
+    monkeypatch.setattr(chat_service, "validate_proxy_url", validate)
+    job = SimpleNamespace(status=None, error=None)
+    proxy = SimpleNamespace(base_url="http://grok2api:8000", provider="grok2api")
+
+    with pytest.raises(RuntimeError, match="validation observed"):
+        asyncio.run(chat_service.execute_job(job, proxy, "grok-4.5"))
