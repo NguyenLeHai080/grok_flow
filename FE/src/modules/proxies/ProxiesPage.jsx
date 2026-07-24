@@ -148,7 +148,8 @@ export default function ProxiesPage() {
                 setForm({
                   ...form,
                   provider,
-                  base_url: provider === 'grok2api' ? 'http://grok2api:8000' : 'http://localhost:8317',
+                  base_url:
+                    provider === 'grok2api' ? 'http://grok2api:8000' : 'http://localhost:8317',
                 })
               }}
               required
