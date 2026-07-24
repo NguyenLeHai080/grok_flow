@@ -47,7 +47,8 @@ async def execute_media_job(job, payload, proxy):
             job.prompt, prompt_headers, payload.mode, proxy.base_url
         )
     request_payload = {"model": payload.model, "prompt": effective_prompt}
-    effective_duration = 6 if use_grok2api and payload.model == "grok-imagine-video-1.5" else payload.duration
+    use_build_video = use_grok2api and payload.model == "grok-imagine-video-1.5"
+    effective_duration = 6 if use_build_video else payload.duration
     if payload.mode == "i2v" and not use_grok2api:
         request_payload["model"] = "grok-imagine-video"
     input_file_id = None
@@ -80,11 +81,12 @@ async def execute_media_job(job, payload, proxy):
         })
     else:
         endpoint = "/v1/videos/generations"
-        request_payload.update({
-            "duration": effective_duration,
-            "aspect_ratio": payload.aspect_ratio if payload.aspect_ratio in ("16:9", "9:16") else "16:9",
-            "resolution": "720p",
-        })
+        if not use_build_video:
+            request_payload.update({
+                "duration": effective_duration,
+                "aspect_ratio": payload.aspect_ratio if payload.aspect_ratio in ("16:9", "9:16") else "16:9",
+                "resolution": "720p",
+            })
     try:
         media_base_url = "https://api.x.ai" if use_direct_xai else proxy.base_url.rstrip("/")
         async with httpx.AsyncClient(timeout=300, follow_redirects=False) as client:
