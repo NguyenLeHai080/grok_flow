@@ -7,7 +7,7 @@ from app.modules.jobs.models import JobStatus
 from app.modules.proxies.service import proxy_api_key, validate_proxy_url
 
 async def execute_job(job, proxy, model):
-    validate_proxy_url(proxy.base_url)
+    validate_proxy_url(proxy.base_url, proxy.provider)
     job.status = JobStatus.running
     job.error = None
     headers = {"Content-Type": "application/json"}
@@ -30,5 +30,4 @@ async def execute_job(job, proxy, model):
         job.error = str(error)
         job.status = JobStatus.failed
         return False, str(error)
-
 
