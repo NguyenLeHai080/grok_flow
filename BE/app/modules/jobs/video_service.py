@@ -47,6 +47,7 @@ async def execute_media_job(job, payload, proxy):
             job.prompt, prompt_headers, payload.mode, proxy.base_url
         )
     request_payload = {"model": payload.model, "prompt": effective_prompt}
+    effective_duration = 6 if use_grok2api and payload.model == "grok-imagine-video-1.5" else payload.duration
     if payload.mode == "i2v" and not use_grok2api:
         request_payload["model"] = "grok-imagine-video"
     input_file_id = None
@@ -80,7 +81,7 @@ async def execute_media_job(job, payload, proxy):
     else:
         endpoint = "/v1/videos/generations"
         request_payload.update({
-            "duration": payload.duration,
+            "duration": effective_duration,
             "aspect_ratio": payload.aspect_ratio if payload.aspect_ratio in ("16:9", "9:16") else "16:9",
             "resolution": "720p",
         })
@@ -103,7 +104,7 @@ async def execute_media_job(job, payload, proxy):
                 "effective_prompt": effective_prompt,
                 "aspect_ratio": request_payload.get("aspect_ratio"),
                 "resolution": request_payload.get("resolution"),
-                "duration": payload.duration if payload.mode in ("t2v", "i2v") else None,
+                "duration": effective_duration if payload.mode in ("t2v", "i2v") else None,
                 "enhancement_error": enhancement_error,
                 "enhance_prompt_requested": payload.enhance_prompt,
                 "enhancement_forced": False,
