@@ -1,0 +1,39 @@
+name: Feature
+description: Propose a product capability or improvement
+title: "[Feature]: "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the user or business value.
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: User story
+      description: As a..., I want..., so that...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - Given..., when..., then...
+        - Given..., when..., then...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Dependencies, risks, and notes
+  - type: dropdown
+    id: size
+    attributes:
+      label: Initial size
+      options: [XS, S, M, L, Needs refinement]
+    validations:
+      required: true

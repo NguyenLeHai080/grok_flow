@@ -1,0 +1,79 @@
+name: groks
+
+services:
+  frontend:
+    build:
+      context: ./FE
+      args:
+        VITE_API_URL: /api/v1
+        VITE_GROK2API_CONSOLE_URL: /grok2api-runtime
+    ports:
+      - "${APP_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+      grok2api:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  backend:
+    build:
+      context: ./BE
+    env_file:
+      - ./BE/.env
+    environment:
+      ENVIRONMENT: "${ENVIRONMENT:-development}"
+      SECRET_KEY: "${SECRET_KEY:-development-only-change-me-please}"
+      DATABASE_URL: sqlite:////app/data/groks.db
+      JOB_EXECUTION_MODE: inline
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: '["http://localhost:${APP_PORT:-8080}","http://127.0.0.1:${APP_PORT:-8080}"]'
+      ALLOWED_HOSTS: '["localhost","127.0.0.1","backend","testserver"]'
+      GROK2API_BASE_URL: http://grok2api:8000
+      GROK2API_API_KEY: "${GROK2API_API_KEY:-}"
+      GROK2API_ADMIN_USERNAME: "${GROK2API_ADMIN_USERNAME:-admin}"
+      GROK2API_ADMIN_PASSWORD: "${GROK2API_ADMIN_PASSWORD:-}"
+      COOKIE_SECURE: "${COOKIE_SECURE:-false}"
+      FORCE_HTTPS: "${FORCE_HTTPS:-false}"
+      ALLOW_PRIVATE_PROXY_HOSTS: "${ALLOW_PRIVATE_PROXY_HOSTS:-true}"
+      XAI_API_KEY: "${XAI_API_KEY:-}"
+    volumes:
+      - ./BE/groks.db:/app/data/groks.db
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  grok2api:
+    build:
+      context: ./grok2api-main
+    image: groks/grok2api-embedded:local
+    environment:
+      TZ: "${TZ:-Asia/Bangkok}"
+    volumes:
+      - ./grok2api-main/config.yaml:/run/grok2api/config.yaml:ro
+      - grok2api-data:/app/data
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    security_opt: ["no-new-privileges:true"]
+
+  warp:
+    image: caomingjun/warp:latest
+    profiles: ["warp"]
+    environment:
+      WARP_SLEEP: "2"
+    cap_add: ["NET_ADMIN"]
+    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    profiles: ["flaresolverr"]
+    environment:
+      TZ: "${TZ:-Asia/Bangkok}"
+      LOG_LEVEL: info
+    restart: unless-stopped
+
+volumes:
+  grok2api-data:
+    external: true
+    name: ${GROK2API_VOLUME:-grok2api_grok2api-data}

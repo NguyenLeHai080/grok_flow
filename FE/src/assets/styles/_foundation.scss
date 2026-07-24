@@ -1,0 +1,131 @@
+:root {
+  --groks-primary: #7367f0;
+  --groks-bg: #f6f6f9;
+  --groks-text: #444050;
+  --groks-muted: #8b8895;
+  --groks-card: #fff;
+  --groks-border: #e8e7ec;
+  --groks-radius: 10px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--groks-bg);
+  color: var(--groks-text);
+  font-family:
+    Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, ui-sans-serif, system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+}
+.app-shell,
+.main-area,
+.page-content {
+  min-width: 0;
+}
+button {
+  cursor: pointer;
+}
+button:disabled,
+.btn:disabled,
+.btn.disabled {
+  cursor: not-allowed;
+}
+.page-content .btn,
+.modal .btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.2;
+  box-shadow: none;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+.page-content .btn:hover:not(:disabled),
+.modal .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.page-content .btn:active:not(:disabled),
+.modal .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.page-content .btn:focus-visible,
+.modal .btn:focus-visible,
+.row-actions button:focus-visible,
+.copy-link:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.2);
+}
+.page-content .btn-primary,
+.modal .btn-primary {
+  border-color: #7367f0;
+  background: #7367f0;
+  box-shadow: 0 5px 12px rgba(115, 103, 240, 0.22);
+}
+.page-content .btn-primary:hover:not(:disabled),
+.modal .btn-primary:hover:not(:disabled) {
+  border-color: #665ad8;
+  background: #665ad8;
+}
+.page-content .btn-secondary,
+.modal .btn-secondary {
+  border-color: #dedce5;
+  background: #fff;
+  color: #5d596c;
+}
+.page-content .btn-secondary:hover:not(:disabled),
+.modal .btn-secondary:hover:not(:disabled) {
+  border-color: #cbc7d5;
+  background: #f6f5f9;
+  color: #403b4c;
+}
+.page-content .btn-success,
+.modal .btn-success {
+  border-color: #28c76f;
+  background: #28c76f;
+  box-shadow: 0 5px 12px rgba(40, 199, 111, 0.2);
+}
+.page-content .btn-danger,
+.modal .btn-danger {
+  border-color: #ea5455;
+  background: #ea5455;
+}
+.page-content .btn-outline-danger,
+.modal .btn-outline-danger {
+  color: #d94445;
+  border-color: #f0b8b8;
+  background: #fff;
+}
+.page-content .btn-outline-danger:hover:not(:disabled),
+.modal .btn-outline-danger:hover:not(:disabled) {
+  color: #fff;
+  border-color: #ea5455;
+  background: #ea5455;
+}
+.page-content .btn-sm,
+.modal .btn-sm {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+body.sidebar-mobile-open {
+  overflow: hidden;
+}
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+}

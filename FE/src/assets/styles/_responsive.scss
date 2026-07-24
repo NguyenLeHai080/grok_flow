@@ -1,0 +1,142 @@
+@media (max-width: 900px) {
+  .gateway-connection {
+    grid-template-columns: 1fr auto;
+  }
+  .sidebar {
+    --cui-sidebar-width: 286px;
+    right: auto;
+    left: 0;
+    z-index: 1001;
+    width: 286px;
+    min-width: 286px;
+    max-width: calc(100vw - 48px);
+    margin-inline-start: 0 !important;
+    flex: none;
+    transform: translateX(-105%);
+    box-shadow: 20px 0 50px rgba(31, 41, 55, 0.18);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.is-mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    border: 0;
+    background: rgba(17, 24, 39, 0.46);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.2s ease;
+  }
+  .sidebar-overlay.is-visible {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .main-area {
+    width: 100%;
+    margin-left: 0;
+  }
+  .mobile-menu {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    flex: 0 0 38px;
+    place-items: center;
+    color: #5d596c;
+    border-radius: 9px;
+    background: #f2f1f7;
+  }
+  .mobile-menu svg {
+    font-size: 20px;
+  }
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+  .login-brand {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  #root {
+    max-width: 100%;
+    overflow-x: visible;
+  }
+  .app-shell {
+    max-width: 100%;
+    overflow: visible;
+  }
+  .sidebar {
+    width: 286px;
+    min-width: 286px;
+    max-width: calc(100vw - 32px);
+  }
+  .main-area {
+    width: 100%;
+    margin: 0;
+  }
+  .page-content {
+    padding: 10px 8px 18px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .page-header .btn {
+    width: 100%;
+  }
+  .table {
+    min-width: 620px;
+  }
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+  .row-actions button {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+  .topbar {
+    height: 62px;
+    padding: 0 15px;
+  }
+  .search input {
+    font-size: 12px;
+  }
+  .search {
+    display: none;
+  }
+  .topbar {
+    justify-content: space-between;
+  }
+  .mobile-menu {
+    margin-right: auto;
+  }
+  .profile {
+    display: none;
+  }
+  .page-header {
+    align-items: flex-start;
+  }
+  .endpoint {
+    grid-template-columns: 65px 1fr;
+  }
+  .endpoint p {
+    grid-column: 2;
+  }
+  .login-page {
+    padding: 20px;
+  }
+  .login-card .card-body {
+    padding: 28px;
+  }
+}

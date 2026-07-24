@@ -1,0 +1,46 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  padding: 7vw;
+  background: radial-gradient(circle at 15% 30%, #8a7ff620, transparent 35%), #f7f7fa;
+}
+.login-brand {
+  padding: 60px;
+}
+.login-brand > svg {
+  color: var(--groks-primary);
+  font-size: 54px;
+}
+.login-brand h1 {
+  font-size: 58px;
+  margin: 15px 0 10px;
+}
+.login-brand p {
+  max-width: 480px;
+  color: var(--groks-muted);
+  font-size: 19px;
+  line-height: 1.7;
+}
+.login-card {
+  max-width: 460px;
+  width: 100%;
+  justify-self: center;
+}
+.login-card .card-body {
+  padding: 42px;
+}
+.login-card h2 {
+  margin: 18px 0 5px;
+}
+.login-icon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 22px;
+  border-radius: 12px;
+  background: var(--groks-primary);
+}

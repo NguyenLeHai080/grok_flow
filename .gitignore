@@ -1,0 +1,38 @@
+# Local secrets
+/.env
+BE/.env
+FE/.env
+grok2api-main/.env
+grok2api-main/config.yaml
+grok2api-main/.admin-password
+grok2api-main/.warp-node-id
+
+# Python
+BE/.venv/
+**/__pycache__/
+.pytest_cache/
+*.py[cod]
+*.db
+
+# Node
+**/node_modules/
+**/dist/
+**/.cache/
+*.tsbuildinfo
+
+# Runtime and temporary files
+*.log
+*.tmp
+*.bak
+*.old
+grok2api-main/.tmp-*.db
+BE/data/
+BE/storage/diagnostics/
+BE/storage/logs/
+FE/storage/logs/
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

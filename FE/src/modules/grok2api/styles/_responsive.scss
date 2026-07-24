@@ -1,0 +1,69 @@
+@media (max-width: 900px) {
+  .g2a-hero,
+  .g2a-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .g2a-runtime {
+    width: 100%;
+  }
+  .g2a-metrics {
+    grid-template-columns: 1fr;
+  }
+  .g2a-overview-cards,
+  .g2a-quota-grid,
+  .g2a-egress-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .g2a-toolbar-actions,
+  .g2a-toolbar-actions > div {
+    width: 100%;
+  }
+  .g2a-toolbar-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .g2a-page-toolbar {
+    align-items: stretch;
+    padding: 0 18px 18px;
+    flex-direction: column;
+  }
+  .g2a-page-toolbar .g2a-section-heading {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .g2a-hero {
+    padding: 26px 22px;
+    border-radius: 15px;
+  }
+  .g2a-nav {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .g2a-overview-cards,
+  .g2a-quota-grid,
+  .g2a-egress-grid {
+    grid-template-columns: 1fr;
+  }
+  .g2a-bar-chart {
+    gap: 7px;
+  }
+  .g2a-quota-main {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .g2a-nav .nav-link {
+    justify-content: center;
+  }
+  .g2a-section-heading {
+    padding: 20px 18px 14px;
+  }
+  .g2a-table-wrap,
+  .g2a-console .gateway-log-view {
+    margin: 0 18px 18px !important;
+  }
+}
