@@ -2,7 +2,7 @@
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs on pull requests and pushes to `dev`, `staging`, and `prod`:
+`.github/workflows/quality.yml` runs on pull requests and pushes to `dev`, `staging`, and `prod`:
 
 - Backend tests with Python 3.12.
 - Frontend lint, formatting check, and production build with Node.js 22.
