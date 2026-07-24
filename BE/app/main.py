@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import time
 from uuid import uuid4
 from collections import defaultdict, deque
@@ -8,7 +9,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+import httpx
 from sqlalchemy import select
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
@@ -86,6 +88,17 @@ async def secure(request: Request, call_next):
 
 @app.get("/api/v1/health", tags=["System"])
 def health(): return {"status": "ok", "service": "Groks API"}
+
+@app.get("/api/v1/media/videos/{video_id}/content", tags=["Media"])
+async def public_video_content(video_id: str):
+    if not re.fullmatch(r"video_[A-Za-z0-9_-]{8,128}", video_id):
+        return JSONResponse({"detail": "Invalid video ID"}, 400)
+    headers = {"Authorization": f"Bearer {settings.grok2api_api_key}"}
+    async with httpx.AsyncClient(timeout=120, follow_redirects=False) as client:
+        upstream = await client.get(f"{settings.grok2api_base_url}/v1/videos/{video_id}/content", headers=headers)
+    if upstream.status_code != 200:
+        return JSONResponse({"detail": "Video unavailable"}, upstream.status_code)
+    return Response(upstream.content, media_type=upstream.headers.get("content-type", "video/mp4"), headers={"Content-Disposition": f'inline; filename="{video_id}.mp4"'})
 
 
 for route in (auth_router, dashboard_router, jobs_router, proxies_router, grok2api_router, api_keys_router, logs_router, users_router):
