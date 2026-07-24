@@ -27,6 +27,13 @@ jobs:
           cp grok2api-main/config.example.yaml grok2api-main/config.yaml
       - run: docker compose config --quiet
       - run: docker compose -f docker-compose.yml -f docker-compose.production.yml config --quiet
+      - name: Validate frontend Nginx configuration
+        run: |
+          docker run --rm \
+            --add-host backend:127.0.0.1 \
+            --add-host grok2api:127.0.0.1 \
+            -v "$PWD/FE/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+            nginx:1.29-alpine nginx -t
 
   docker-build:
     name: Docker build - ${{ matrix.service }}
