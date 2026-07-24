@@ -42,9 +42,14 @@ Branch protection prevents merge until the required checks succeed. Deployment r
 - `staging` to the GitHub `staging` environment.
 - `prod` to the GitHub `production` environment.
 
-The runner connects to the target server through SSH, fetches the exact branch, applies the production Docker Compose configuration, and verifies container state. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
+Deployment runs on a repository-scoped self-hosted runner installed as a systemd service on the target server. The runner fetches the exact branch in `DEPLOY_PATH`, applies the appropriate Docker Compose configuration, and verifies container state. This avoids exposing a private LAN server to GitHub-hosted runners. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
 
-Automatic deployment remains disabled until repository variable `CD_ENABLED` is set to `true`. Manual dispatch uses the same safety switch.
+Automatic deployment is controlled independently by repository variables:
+
+- `STAGING_CD_ENABLED=true` enables staging deployment with `docker-compose.yml`.
+- `PRODUCTION_CD_ENABLED=true` enables production deployment with both `docker-compose.yml` and `docker-compose.production.yml`.
+
+Manual dispatch uses the same environment-specific safety switches. Keep production disabled until TLS, a public hostname, backups, and production secrets are ready.
 
 ## Required GitHub environment secrets
 
@@ -52,14 +57,13 @@ Add these secrets separately to the `staging` and `production` environments:
 
 | Secret | Meaning |
 | --- | --- |
-| `DEPLOY_HOST` | Server hostname or IP |
-| `DEPLOY_PORT` | SSH port, normally `22` |
-| `DEPLOY_USER` | Restricted deployment user |
-| `DEPLOY_SSH_KEY` | Private SSH key for that user |
 | `DEPLOY_PATH` | Existing absolute checkout path on the server |
-| `DEPLOY_KNOWN_HOSTS` | Trusted `ssh-keyscan` output obtained out of band |
+| `DEPLOY_PROJECT_NAME` | Unique Compose project name, such as `groks` or `groks-production` |
+| `DEPLOY_OVERRIDE_FILE` | Optional absolute server-only Compose override file |
 
-The server checkout must have read access to the repository and a server-managed `.env`. Never place production secrets in workflow files or the repository.
+The server checkout must have read access to the repository and a server-managed `.env`. The self-hosted runner must carry the `groks-server` label and run as the restricted deployment user. Never place production secrets in workflow files or the repository.
+
+Staging and production must use separate checkout paths, Compose project names, databases, Redis volumes, Grok2API volumes, ports, and server-managed configuration files.
 
 ## Server prerequisites
 
