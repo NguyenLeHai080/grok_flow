@@ -20,7 +20,11 @@ concurrency:
 
 jobs:
   deploy:
-    if: vars.CD_ENABLED == 'true'
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'staging' && vars.STAGING_CD_ENABLED == 'true') ||
+      (github.event_name == 'push' && github.ref_name == 'prod' && vars.PRODUCTION_CD_ENABLED == 'true') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' && vars.STAGING_CD_ENABLED == 'true') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production' && vars.PRODUCTION_CD_ENABLED == 'true')
     name: Deploy selected environment
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.ref_name == 'prod' && 'production' || 'staging') }}
@@ -56,5 +60,10 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_BRANCH: ${{ steps.target.outputs.branch }}
         run: |
-          printf -v remote_command 'set -euo pipefail; cd %q; git fetch --prune origin; git checkout %q; git reset --hard origin/%q; docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build --remove-orphans; docker compose -f docker-compose.yml -f docker-compose.production.yml ps' "$DEPLOY_PATH" "$DEPLOY_BRANCH" "$DEPLOY_BRANCH"
+          if [ "$DEPLOY_BRANCH" = "prod" ]; then
+            compose_files='-f docker-compose.yml -f docker-compose.production.yml'
+          else
+            compose_files='-f docker-compose.yml'
+          fi
+          printf -v remote_command 'set -euo pipefail; cd %q; git fetch --prune origin; git checkout %q; git reset --hard origin/%q; docker compose %s up -d --build --remove-orphans; docker compose %s ps' "$DEPLOY_PATH" "$DEPLOY_BRANCH" "$DEPLOY_BRANCH" "$compose_files" "$compose_files"
           ssh -i ~/.ssh/deploy_key -p "${DEPLOY_PORT:-22}" "$DEPLOY_USER@$DEPLOY_HOST" "$remote_command"

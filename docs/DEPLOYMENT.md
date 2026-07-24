@@ -44,7 +44,12 @@ Branch protection prevents merge until the required checks succeed. Deployment r
 
 The runner connects to the target server through SSH, fetches the exact branch, applies the production Docker Compose configuration, and verifies container state. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
 
-Automatic deployment remains disabled until repository variable `CD_ENABLED` is set to `true`. Manual dispatch uses the same safety switch.
+Automatic deployment is controlled independently by repository variables:
+
+- `STAGING_CD_ENABLED=true` enables staging deployment with `docker-compose.yml`.
+- `PRODUCTION_CD_ENABLED=true` enables production deployment with both `docker-compose.yml` and `docker-compose.production.yml`.
+
+Manual dispatch uses the same environment-specific safety switches. Keep production disabled until TLS, a public hostname, backups, and production secrets are ready.
 
 ## Required GitHub environment secrets
 
