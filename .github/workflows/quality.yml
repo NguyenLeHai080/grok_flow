@@ -48,7 +48,7 @@ jobs:
           cache-dependency-path: BE/requirements.txt
       - run: python -m pip install --upgrade pip
       - run: pip install -r BE/requirements.txt
-      - run: pytest -q
+      - run: python -m pytest -q
         working-directory: BE
         env:
           ENVIRONMENT: test
