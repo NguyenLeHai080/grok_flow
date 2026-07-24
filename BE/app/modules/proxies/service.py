@@ -33,13 +33,13 @@ def validate_config(config_json):
         raise HTTPException(422, "config_json khong duoc chua cookie, token hoac thong tin dang nhap")
 
 
-def validate_proxy_url(base_url):
+def validate_proxy_url(base_url, provider="cliproxyapi"):
     parsed = urlparse(base_url)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password:
         raise HTTPException(422, "Proxy URL phải là HTTP(S) và không chứa credentials")
     if parsed.port and not 1 <= parsed.port <= 65535:
         raise HTTPException(422, "Proxy port không hợp lệ")
-    if settings.allow_private_proxy_hosts:
+    if settings.allow_private_proxy_hosts or (provider.lower() == "grok2api" and parsed.hostname.lower() == "grok2api"):
         return
     if parsed.hostname.lower() in {"localhost", "localhost.localdomain"} or parsed.hostname.lower().endswith(".local"):
         raise HTTPException(422, "Không cho phép proxy trỏ vào mạng nội bộ")
@@ -54,7 +54,7 @@ def validate_proxy_url(base_url):
 
 
 async def check_health(base_url, provider="cliproxyapi", api_key=""):
-    validate_proxy_url(base_url)
+    validate_proxy_url(base_url, provider)
     if provider.lower() == "grok2api":
         endpoint = "/readyz"
         headers = {}
