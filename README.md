@@ -88,42 +88,42 @@ For local development, configure the backend with `GROK2API_BASE_URL=http://127.
 
 ## Database migrations
 
-Development SQLite t? t?o schema ?? kh?i ??ng nhanh. Production kh?ng ch?y `create_all`; Alembic l? ngu?n qu?n l? schema duy nh?t.
+Ở môi trường development, SQLite tự tạo schema để khởi động nhanh. Production không chạy `create_all`; Alembic là nguồn quản lý schema duy nhất.
 
 ```powershell
 cd BE
 
-# Xem revision hi?n t?i
+# Xem revision hiện tại
 .venv\Scripts\alembic.exe current
 
-# ?p d?ng migration
+# Áp dụng migration
 .venv\Scripts\alembic.exe upgrade head
 
-# Sau khi thay ??i models
+# Sau khi thay đổi models
 .venv\Scripts\alembic.exe revision --autogenerate -m "describe change"
 .venv\Scripts\alembic.exe check
 ```
 
-Database SQLite hi?n t?i ?? ???c stamp t?i initial revision. Kh?ng ch?y `stamp` cho database m?i; d?ng `upgrade head`.
+Database SQLite hiện tại đã được stamp tại initial revision. Không chạy `stamp` cho database mới; dùng `upgrade head`.
 
 ## Production with PostgreSQL
 
-?i?n c?c bi?n `PUBLIC_ORIGIN`, `PUBLIC_HOST`, `POSTGRES_DB`, `POSTGRES_USER` v? `POSTGRES_PASSWORD`, sau ?? ch?y:
+Điền các biến `PUBLIC_ORIGIN`, `PUBLIC_HOST`, `POSTGRES_DB`, `POSTGRES_USER` và `POSTGRES_PASSWORD`, sau đó chạy:
 
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.production.yml --profile warp --profile flaresolverr up -d --build
 ```
 
-Production override kh?i ??ng PostgreSQL, ch?y `alembic upgrade head`, r?i m?i ch?y FastAPI.
+Production override khởi động PostgreSQL, chạy `alembic upgrade head`, rồi mới chạy FastAPI.
 
 ## Background jobs
 
-- Development d?ng `JOB_EXECUTION_MODE=inline` ?? ch?y ??n gi?n, kh?ng c?n Redis.
-- Production d?ng `JOB_EXECUTION_MODE=queue`. API ch? x?p h?ng; service `worker` th?c thi chat, image v? media qua ARQ.
-- Redis URL ???c c?u h?nh b?ng `REDIS_URL`. Production Compose b?t Redis persistence v? health check.
-- M?i request tr? header `X-Request-ID`; backend ghi structured log cho request ho?n t?t v? request l?i.
+- Development dùng `JOB_EXECUTION_MODE=inline` để chạy đơn giản, không cần Redis.
+- Production dùng `JOB_EXECUTION_MODE=queue`. API chỉ xếp hàng; service `worker` thực thi chat, image và media qua ARQ.
+- Redis URL được cấu hình bằng `REDIS_URL`. Production Compose bật Redis persistence và health check.
+- Mỗi request trả header `X-Request-ID`; backend ghi structured log cho request hoàn tất và request lỗi.
 
-Theo d?i worker:
+Theo dõi worker:
 
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.production.yml logs -f worker redis
