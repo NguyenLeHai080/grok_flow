@@ -62,6 +62,7 @@ services:
     profiles: ["warp"]
     environment:
       WARP_SLEEP: "2"
+      GOST_ARGS: "-L :1080"
     cap_add: ["NET_ADMIN"]
     restart: unless-stopped
 
@@ -71,6 +72,12 @@ services:
     environment:
       TZ: "${TZ:-Asia/Bangkok}"
       LOG_LEVEL: info
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8191/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: unless-stopped
 
 volumes:

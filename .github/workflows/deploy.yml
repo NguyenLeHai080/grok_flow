@@ -51,8 +51,11 @@ jobs:
         run: |
           set -euo pipefail
           compose_files=(-f docker-compose.yml)
+          compose_profiles=()
           if [ "$DEPLOY_BRANCH" = "prod" ]; then
             compose_files+=(-f docker-compose.production.yml)
+          else
+            compose_profiles+=(--profile warp --profile flaresolverr)
           fi
           if [ -n "${DEPLOY_OVERRIDE_FILE:-}" ]; then
             compose_files+=(-f "$DEPLOY_OVERRIDE_FILE")
@@ -61,5 +64,5 @@ jobs:
           git fetch --prune origin
           git checkout "$DEPLOY_BRANCH"
           git reset --hard "origin/$DEPLOY_BRANCH"
-          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" up -d --build --remove-orphans
-          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" ps
+          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" "${compose_profiles[@]}" up -d --build --remove-orphans
+          docker compose -p "$DEPLOY_PROJECT_NAME" "${compose_files[@]}" "${compose_profiles[@]}" ps
