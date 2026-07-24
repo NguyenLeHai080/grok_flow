@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AnonymousBoundary, AuthBoundary } from "@/app/auth-boundary";
 import { DeferredAccountsPage, DeferredApiDocsPage, DeferredAppShell, DeferredClientKeysPage, DeferredCreativeConsolePage, DeferredDashboardPage, DeferredGalleryPage, DeferredModelsPage, DeferredRequestAuditsPage, DeferredSettingsPage, DeferredVideoGalleryPage } from "@/app/deferred-pages";
 import { LoginPage } from "@/features/auth/login-page";
+import { runtimeConfig } from "@/shared/config/runtime-config";
 
 export const router = createBrowserRouter([
   {
@@ -32,4 +33,4 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "*", element: <Navigate to="/dashboard" replace /> },
-]);
+], { basename: runtimeConfig.appBasePath || "/" });
