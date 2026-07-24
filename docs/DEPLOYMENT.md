@@ -58,8 +58,12 @@ Add these secrets separately to the `staging` and `production` environments:
 | Secret | Meaning |
 | --- | --- |
 | `DEPLOY_PATH` | Existing absolute checkout path on the server |
+| `DEPLOY_PROJECT_NAME` | Unique Compose project name, such as `groks` or `groks-production` |
+| `DEPLOY_OVERRIDE_FILE` | Optional absolute server-only Compose override file |
 
 The server checkout must have read access to the repository and a server-managed `.env`. The self-hosted runner must carry the `groks-server` label and run as the restricted deployment user. Never place production secrets in workflow files or the repository.
+
+Staging and production must use separate checkout paths, Compose project names, databases, Redis volumes, Grok2API volumes, ports, and server-managed configuration files.
 
 ## Server prerequisites
 
