@@ -1,6 +1,9 @@
 # Groks Control Center
 
-[![CI](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/quality.yml/badge.svg)](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/quality.yml)
+[![Backend](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/backend.yml/badge.svg)](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/backend.yml)
+[![Frontend](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/frontend.yml/badge.svg)](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/frontend.yml)
+[![Infrastructure](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/infrastructure.yml)
+[![Security](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/security.yml/badge.svg)](https://github.com/NguyenLeHai080/grok_flow/actions/workflows/security.yml)
 
 > Delivery branches: `dev` for integration, `staging` for QA/UAT, and `prod` for production. Contributions use short-lived `feat/*`, `fix/*`, or `hotfix/*` branches and pull requests.
 
