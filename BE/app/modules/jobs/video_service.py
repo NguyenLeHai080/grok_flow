@@ -11,7 +11,7 @@ from app.modules.jobs.image_service import (
     upload_xai_input_image,
     validate_input_image,
 )
-from app.modules.jobs.media_utils import normalize_media_urls
+from app.modules.jobs.media_utils import normalize_media_urls, public_media_url
 from app.modules.jobs.models import JobStatus
 from app.modules.proxies.service import proxy_api_key
 
@@ -57,7 +57,8 @@ async def execute_media_job(job, payload, proxy):
         request_payload["model"] = payload.model.removeprefix("xai/")
     image_metadata = None
     if payload.mode in ("i2i", "i2v"):
-        input_image = validate_input_image(payload.input_image)
+        input_image = public_media_url(payload.input_image, proxy.base_url) if use_grok2api else payload.input_image
+        input_image = validate_input_image(input_image)
         image_metadata = input_image_metadata(input_image)
         if payload.mode == "i2v" and input_image.startswith("data:") and not use_grok2api:
             input_file_id = await upload_xai_input_image(input_image, oauth_token)

@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     cliproxyapi_api_key: str = ""
     grok2api_api_key: str = ""
     grok2api_base_url: str = "http://127.0.0.1:8002"
+    public_origin: str = "http://localhost:8080"
     grok2api_admin_username: str = "admin"
     grok2api_admin_password: str = ""
     xai_api_key: str = ""
