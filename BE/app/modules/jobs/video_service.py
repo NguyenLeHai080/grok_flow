@@ -47,7 +47,7 @@ async def execute_media_job(job, payload, proxy):
             job.prompt, prompt_headers, payload.mode, proxy.base_url
         )
     request_payload = {"model": payload.model, "prompt": effective_prompt}
-    if payload.mode == "i2v":
+    if payload.mode == "i2v" and not use_grok2api:
         request_payload["model"] = "grok-imagine-video"
     input_file_id = None
     endpoint = "/v1/images/generations"
@@ -57,10 +57,12 @@ async def execute_media_job(job, payload, proxy):
     if payload.mode in ("i2i", "i2v"):
         input_image = validate_input_image(payload.input_image)
         image_metadata = input_image_metadata(input_image)
-        if payload.mode == "i2v" and input_image.startswith("data:"):
+        if payload.mode == "i2v" and input_image.startswith("data:") and not use_grok2api:
             input_file_id = await upload_xai_input_image(input_image, oauth_token)
             request_payload["image"] = {"file_id": input_file_id}
             image_metadata["xai_file_id"] = input_file_id
+        elif payload.mode == "i2v" and input_image.startswith("data:"):
+            raise ValueError("Grok2API I2V requires an HTTPS image URL from a completed image Job")
         elif payload.mode == "i2v":
             request_payload["image"] = {"url": input_image}
         else:

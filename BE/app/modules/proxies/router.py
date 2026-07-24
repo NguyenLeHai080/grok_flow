@@ -8,6 +8,7 @@ from app.modules.common.services import write_audit
 from app.modules.proxies.models import ProxyConfig
 from app.modules.proxies.schemas import ProxyInput, ProxyOut
 from app.modules.proxies.service import check_health, proxy_api_key, validate_config, validate_proxy_url
+from app.modules.grok2api.service import client as grok2api_client
 from app.modules.users.models import Role, User
 
 router = APIRouter(prefix="/proxies", tags=["ProxyAPI"])
@@ -50,6 +51,19 @@ async def models(item_id: int, database: Session = Depends(get_db), _: User = De
     item = database.get(ProxyConfig, item_id)
     if not item or not item.is_active: raise HTTPException(404, "Proxy does not exist or is inactive")
     validate_proxy_url(item.base_url, item.provider)
+    if item.provider.lower() == "grok2api":
+        catalog = await grok2api_client.models()
+        return [
+            {
+                "id": model.get("publicId") or model.get("id"),
+                "object": "model",
+                "owned_by": "grok2api",
+                "capability": model.get("capability"),
+                "provider": model.get("provider"),
+            }
+            for model in catalog.get("items", [])
+            if model.get("enabled", True) and (model.get("publicId") or model.get("id"))
+        ]
     api_key = proxy_api_key(item)
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
