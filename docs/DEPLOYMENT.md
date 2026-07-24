@@ -1,14 +1,39 @@
 # CI/CD and Deployment
 
-## Continuous integration
+## Parallel pipeline architecture
 
-`.github/workflows/quality.yml` runs on pull requests and pushes to `dev`, `staging`, and `prod`:
+Every pull request to `dev`, `staging`, or `prod` starts five independent workflows at the same time. Each workflow can be inspected and rerun without restarting unrelated checks.
 
-- Backend tests with Python 3.12.
-- Frontend lint, formatting check, and production build with Node.js 22.
-- Docker Compose configuration validation.
-- Conventional Commit and issue-reference validation for pull requests.
-- Secret scanning with Gitleaks.
+| Workflow | Required check | Additional parallel checks |
+| --- | --- | --- |
+| `governance.yml` | `Commit policy` | Pull request size |
+| `backend.yml` | `Backend tests` | Python 3.12/3.13 matrix, migrations, compile check |
+| `frontend.yml` | `Frontend quality` | Dependency audit, build artifact |
+| `infrastructure.yml` | `Compose validation` | Backend/frontend/Grok2API Docker build matrix |
+| `security.yml` | `Secret scan` | Trivy filesystem scan, Python dependency audit |
+
+The workflows use independent concurrency groups. A new commit cancels stale work for that pull request or branch while unrelated pipelines continue in parallel.
+
+## Delivery sequence
+
+```text
+feature PR
+   ├── Governance
+   ├── Backend
+   ├── Frontend
+   ├── Infrastructure
+   └── Security
+          ↓ all required checks pass
+        merge to dev
+          ↓ promotion PR
+        staging
+          ↓ optional automatic deploy
+          ↓ promotion PR
+        prod
+          ↓ optional automatic deploy
+```
+
+Branch protection prevents merge until the required checks succeed. Deployment runs only after an accepted pull request is merged into `staging` or `prod`; it does not deploy unreviewed feature branches.
 
 ## Continuous deployment
 
@@ -17,9 +42,9 @@
 - `staging` to the GitHub `staging` environment.
 - `prod` to the GitHub `production` environment.
 
-The runner connects to the target server through SSH, fetches the exact branch, runs Docker Compose, applies the production Compose configuration, and verifies container state. Configure environment protection so production requires a manual reviewer.
+The runner connects to the target server through SSH, fetches the exact branch, applies the production Docker Compose configuration, and verifies container state. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
 
-Automatic deployment remains disabled until the repository variable `CD_ENABLED` is set to `true`. This prevents failed or accidental deployments before both environments and their secrets are ready. Manual dispatch uses the same safety switch.
+Automatic deployment remains disabled until repository variable `CD_ENABLED` is set to `true`. Manual dispatch uses the same safety switch.
 
 ## Required GitHub environment secrets
 
