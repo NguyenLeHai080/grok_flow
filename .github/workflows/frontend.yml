@@ -1,0 +1,57 @@
+name: Frontend
+
+on:
+  pull_request:
+    branches: [dev, staging, prod]
+  push:
+    branches: [dev, staging, prod]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Frontend quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: FE/package-lock.json
+      - run: npm ci
+        working-directory: FE
+      - run: npm run lint
+        working-directory: FE
+      - run: npm run format:check
+        working-directory: FE
+      - run: npm run build
+        working-directory: FE
+      - name: Upload production bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-${{ github.sha }}
+          path: FE/dist
+          retention-days: 7
+          if-no-files-found: error
+
+  dependency-review:
+    name: Frontend dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: FE/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: FE
+      - run: npm audit --audit-level=high
+        working-directory: FE
