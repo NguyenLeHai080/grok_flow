@@ -1,23 +1,23 @@
-# Grok2API tr?n c?ng m?t domain
+# Grok2API trên cùng một domain
 
-Production v? local Docker ??u d?ng m?t entrypoint duy nh?t:
+Production và local Docker đều dùng một entrypoint duy nhất:
 
 - `/`: Groks frontend.
 - `/api/v1`: Groks backend.
-- `/grok2api-runtime`: Grok2API console v? runtime.
+- `/grok2api-runtime`: Grok2API console và runtime.
 
-Lu?ng qu?n tr?:
+Luồng quản trị:
 
 `Browser -> Groks FE -> /api/v1/grok2api/admin/* -> Groks BE -> Grok2API`
 
-Th?ng tin ??ng nh?p qu?n tr? Grok2API kh?ng ???c g?i xu?ng frontend.
+Thông tin đăng nhập quản trị Grok2API không được gửi xuống frontend.
 
-## Kh?i ??ng
+## Khởi động
 
 ```powershell
 docker compose --profile warp --profile flaresolverr up -d --build
 ```
 
-Reverse proxy n?m trong `FE/deploy/nginx.conf`. Khi tri?n khai, ch? public c?ng frontend ho?c load balancer ph?a tr??c n?; kh?ng public tr?c ti?p backend v? Grok2API.
+Reverse proxy nằm trong `FE/deploy/nginx.conf`. Khi triển khai, chỉ public cổng frontend hoặc load balancer phía trước nó; không public trực tiếp backend và Grok2API.
 
-N?u media c?n URL c?ng khai, c?u h?nh public media base URL th?nh `https://your-domain/grok2api-runtime`.
+Nếu media cần URL công khai, cấu hình public media base URL thành `https://your-domain/grok2api-runtime`.
