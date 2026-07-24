@@ -42,7 +42,7 @@ Branch protection prevents merge until the required checks succeed. Deployment r
 - `staging` to the GitHub `staging` environment.
 - `prod` to the GitHub `production` environment.
 
-The runner connects to the target server through SSH, fetches the exact branch, applies the production Docker Compose configuration, and verifies container state. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
+Deployment runs on a repository-scoped self-hosted runner installed as a systemd service on the target server. The runner fetches the exact branch in `DEPLOY_PATH`, applies the appropriate Docker Compose configuration, and verifies container state. This avoids exposing a private LAN server to GitHub-hosted runners. Configure the production environment with required reviewers when the GitHub plan and team structure permit it.
 
 Automatic deployment is controlled independently by repository variables:
 
@@ -57,14 +57,9 @@ Add these secrets separately to the `staging` and `production` environments:
 
 | Secret | Meaning |
 | --- | --- |
-| `DEPLOY_HOST` | Server hostname or IP |
-| `DEPLOY_PORT` | SSH port, normally `22` |
-| `DEPLOY_USER` | Restricted deployment user |
-| `DEPLOY_SSH_KEY` | Private SSH key for that user |
 | `DEPLOY_PATH` | Existing absolute checkout path on the server |
-| `DEPLOY_KNOWN_HOSTS` | Trusted `ssh-keyscan` output obtained out of band |
 
-The server checkout must have read access to the repository and a server-managed `.env`. Never place production secrets in workflow files or the repository.
+The server checkout must have read access to the repository and a server-managed `.env`. The self-hosted runner must carry the `groks-server` label and run as the restricted deployment user. Never place production secrets in workflow files or the repository.
 
 ## Server prerequisites
 
