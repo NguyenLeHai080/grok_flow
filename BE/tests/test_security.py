@@ -33,6 +33,9 @@ def test_private_proxy_destinations_can_be_blocked():
             validate_proxy_url("http://127.0.0.1:8317")
         with pytest.raises(HTTPException):
             validate_proxy_url("http://169.254.169.254/latest/meta-data")
+        validate_proxy_url("http://grok2api:8000", "grok2api")
+        with pytest.raises(HTTPException):
+            validate_proxy_url("http://backend:8000", "grok2api")
     finally:
         settings.allow_private_proxy_hosts = original
 

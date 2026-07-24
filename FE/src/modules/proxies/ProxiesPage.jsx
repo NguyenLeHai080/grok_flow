@@ -143,7 +143,14 @@ export default function ProxiesPage() {
               className="mb-3"
               label="Provider"
               value={form.provider}
-              onChange={(e) => setForm({ ...form, provider: e.target.value })}
+              onChange={(e) => {
+                const provider = e.target.value
+                setForm({
+                  ...form,
+                  provider,
+                  base_url: provider === 'grok2api' ? 'http://grok2api:8000' : 'http://localhost:8317',
+                })
+              }}
               required
             >
               <option value="cliproxyapi">CLIProxyAPI</option>

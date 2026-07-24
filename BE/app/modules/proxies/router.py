@@ -20,13 +20,13 @@ def index(database: Session = Depends(get_db), _: User = Depends(current_user)):
 
 @router.post("", response_model=ProxyOut, status_code=201)
 def create(payload: ProxyInput, database: Session = Depends(get_db), user: User = Depends(require_roles(Role.admin, Role.operator))):
-    validate_config(payload.config_json); validate_proxy_url(payload.base_url); item = ProxyConfig(**payload.model_dump()); database.add(item)
+    validate_config(payload.config_json); validate_proxy_url(payload.base_url, payload.provider); item = ProxyConfig(**payload.model_dump()); database.add(item)
     write_audit(database, user.id, "create", "proxy"); database.commit(); database.refresh(item); return item
 
 
 @router.put("/{item_id}", response_model=ProxyOut)
 def update_proxy(item_id: int, payload: ProxyInput, database: Session = Depends(get_db), user: User = Depends(require_roles(Role.admin, Role.operator))):
-    validate_config(payload.config_json); validate_proxy_url(payload.base_url); item = database.get(ProxyConfig, item_id)
+    validate_config(payload.config_json); validate_proxy_url(payload.base_url, payload.provider); item = database.get(ProxyConfig, item_id)
     if not item: raise HTTPException(404, "Không tìm thấy proxy")
     for field, value in payload.model_dump().items(): setattr(item, field, value)
     write_audit(database, user.id, "update", f"proxy:{item_id}"); database.commit(); database.refresh(item); return item
@@ -49,7 +49,7 @@ async def health(item_id: int, database: Session = Depends(get_db), _: User = De
 async def models(item_id: int, database: Session = Depends(get_db), _: User = Depends(current_user)):
     item = database.get(ProxyConfig, item_id)
     if not item or not item.is_active: raise HTTPException(404, "Proxy does not exist or is inactive")
-    validate_proxy_url(item.base_url)
+    validate_proxy_url(item.base_url, item.provider)
     api_key = proxy_api_key(item)
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
