@@ -1,9 +1,7 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
+  push:
     branches: [staging, prod]
   workflow_dispatch:
     inputs:
@@ -17,27 +15,27 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.event.workflow_run.head_branch }}
+  group: deploy-${{ github.event_name == 'workflow_dispatch' && inputs.environment || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   deploy:
-    if: vars.CD_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    if: vars.CD_ENABLED == 'true'
     name: Deploy selected environment
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.event.workflow_run.head_branch == 'prod' && 'production' || 'staging') }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.ref_name == 'prod' && 'production' || 'staging') }}
     steps:
       - name: Resolve branch
         id: target
         env:
           EVENT_NAME: ${{ github.event_name }}
           REQUESTED_ENVIRONMENT: ${{ inputs.environment }}
-          CI_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          PUSH_BRANCH: ${{ github.ref_name }}
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             [ "$REQUESTED_ENVIRONMENT" = "production" ] && branch=prod || branch=staging
           else
-            branch="$CI_BRANCH"
+            branch="$PUSH_BRANCH"
           fi
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
       - name: Configure SSH
